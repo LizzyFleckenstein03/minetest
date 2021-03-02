@@ -166,7 +166,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	writeARGB8(os, color);
 	os << serializeString16(inventory_overlay);
 	os << serializeString16(wield_overlay);
-	os << serializeString(wield_animation);
+	os << serializeString16(wield_animation);
 
 	os << serializeString16(short_description);
 }
@@ -222,7 +222,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 	// block to not need to increase the version.
 	try {
 		short_description = deSerializeString16(is);
-		wield_animation = deSerializeString(is);
+		wield_animation = deSerializeString16(is);
 	} catch (SerializationError &e) {
 	}
 }

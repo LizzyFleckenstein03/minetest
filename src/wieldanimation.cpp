@@ -145,7 +145,7 @@ void WieldAnimation::fillRepository()
 
 void WieldAnimation::serialize(std::ostream &os, u16 protocol_version)
 {
-	os << serializeString(name);
+	os << serializeString16(name);
 	writeF32(os, m_duration);
 	std::vector<v3f> nodes = m_translationspline.getNodes();
 	writeU16(os, nodes.size());
@@ -176,7 +176,7 @@ void WieldAnimation::serialize(std::ostream &os, u16 protocol_version)
 
 WieldAnimation WieldAnimation::deSerialize(std::istream &is)
 {
-	std::string name = deSerializeString(is);
+	std::string name = deSerializeString16(is);
 	WieldAnimation &anim = repository[name];
 	anim.name = name;
 	m_duration = readF32(is);
