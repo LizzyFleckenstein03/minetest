@@ -677,10 +677,10 @@ int ModApiItemMod::l_register_wield_animation(lua_State *L)
 
 void ModApiItemMod::Initialize(lua_State *L, int top)
 {
-	API_FCT(register_wield_animation);
 	API_FCT(register_item_raw);
 	API_FCT(unregister_item_raw);
 	API_FCT(register_alias_raw);
 	API_FCT(get_content_id);
 	API_FCT(get_name_from_content_id);
+	API_FCT(register_wield_animation);
 }

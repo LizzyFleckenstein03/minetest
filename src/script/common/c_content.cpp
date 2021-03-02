@@ -123,6 +123,7 @@ void read_item_definition(lua_State* L, int index,
 	getstringfield(L, index, "node_placement_prediction",
 			def.node_placement_prediction);
 }
+
 /******************************************************************************/
 void read_wield_animation(lua_State *L, int index)
 {
@@ -230,6 +231,7 @@ void read_wield_animation(lua_State *L, int index)
 	anim.setDuration(totalDuration);
 	lua_pop(L, 1);
 }
+
 /******************************************************************************/
 void push_item_definition(lua_State *L, const ItemDefinition &i)
 {

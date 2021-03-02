@@ -221,10 +221,9 @@ void ItemDefinition::deSerialize(std::istream &is)
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try {
-		short_description = deSerializeString16(is);
 		wield_animation = deSerializeString16(is);
-	} catch (SerializationError &e) {
-	}
+		short_description = deSerializeString16(is);
+	} catch (SerializationError &e) {};
 }
 
 

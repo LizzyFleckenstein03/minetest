@@ -174,12 +174,13 @@ void Camera::step(f32 dtime)
 	bool was_under_zero = m_wield_change_timer < 0;
 	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125);
 
-if (m_wield_change_timer >= 0 && was_under_zero) {
+	if (m_wield_change_timer >= 0 && was_under_zero)
+	{
 		m_wieldnode->setItem(m_wield_item_next, m_client);
 		m_wield_animation = m_wield_item_next
 			.getDefinition(m_client->getItemDefManager())
 			.wield_animation;
-}
+	}
 
 	if (m_view_bobbing_state != 0)
 	{
