@@ -179,6 +179,7 @@ LOCAL_SRC_FILES := \
 	../../../src/server.cpp                         \
 	../../../src/serverenvironment.cpp              \
 	../../../src/serverlist.cpp                     \
+	../../../src/splinesequence.cpp                	\
 	../../../src/settings.cpp                       \
 	../../../src/staticobject.cpp                   \
 	../../../src/texture_override.cpp               \
@@ -187,7 +188,8 @@ LOCAL_SRC_FILES := \
 	../../../src/translation.cpp                    \
 	../../../src/version.cpp                        \
 	../../../src/voxel.cpp                          \
-	../../../src/voxelalgorithms.cpp
+	../../../src/voxelalgorithms.cpp                \
+	../../../src/wieldanimation.cpp
 
 # LevelDB backend is disabled
 #	../../../src/database/database-leveldb.cpp
