@@ -67,7 +67,10 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	inventory_overlay = def.inventory_overlay;
 	wield_image = def.wield_image;
 	wield_overlay = def.wield_overlay;
-	wield_animation = def.wield_animation;
+	wield_animation_base = def.wield_animation_base;
+	wield_animation_dig = def.wield_animation_dig;
+	wield_animation_place = def.wield_animation_place;
+	wield_animation_activate = def.wield_animation_activate;
 	wield_scale = def.wield_scale;
 	stack_max = def.stack_max;
 	usable = def.usable;
@@ -109,7 +112,10 @@ void ItemDefinition::reset()
 	inventory_overlay = "";
 	wield_image = "";
 	wield_overlay = "";
-	wield_animation = "";
+	wield_animation_base = "base";
+	wield_animation_dig = "punch";
+	wield_animation_place = "punch";
+	wield_animation_activate = "base";
 	palette_image = "";
 	color = video::SColor(0xFFFFFFFF);
 	wield_scale = v3f(1.0, 1.0, 1.0);
@@ -166,7 +172,10 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	writeARGB8(os, color);
 	os << serializeString16(inventory_overlay);
 	os << serializeString16(wield_overlay);
-	os << serializeString16(wield_animation);
+	os << serializeString16(wield_animation_base);
+	os << serializeString16(wield_animation_dig);
+	os << serializeString16(wield_animation_place);
+	os << serializeString16(wield_animation_activate);
 
 	os << serializeString16(short_description);
 }
@@ -221,7 +230,10 @@ void ItemDefinition::deSerialize(std::istream &is)
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
 	try {
-		wield_animation = deSerializeString16(is);
+		wield_animation_base = deSerializeString16(is);
+		wield_animation_dig = deSerializeString16(is);
+		wield_animation_place = deSerializeString16(is);
+		wield_animation_activate = deSerializeString16(is);
 		short_description = deSerializeString16(is);
 	} catch (SerializationError &e) {};
 }

@@ -193,6 +193,8 @@ public:
 
 	inline void addArmInertia(f32 player_yaw);
 
+	const WieldAnimation &getCurrentWieldAnimation();
+
 private:
 	// Nodes
 	scene::ISceneNode *m_playernode = nullptr;
@@ -254,7 +256,10 @@ private:
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
 	s32 m_digging_button = -1;
-	std::string m_wield_animation = "";
+	std::string m_wield_animation_base = "";
+	std::string m_wield_animation_dig = "";
+	std::string m_wield_animation_place = "";
+	std::string m_wield_animation_activate = "";
 
 	// Animation when changing wielded item
 	f32 m_wield_change_timer = 0.125f;

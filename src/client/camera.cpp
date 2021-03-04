@@ -177,9 +177,12 @@ void Camera::step(f32 dtime)
 	if (m_wield_change_timer >= 0 && was_under_zero)
 	{
 		m_wieldnode->setItem(m_wield_item_next, m_client);
-		m_wield_animation = m_wield_item_next
-			.getDefinition(m_client->getItemDefManager())
-			.wield_animation;
+		const ItemDefinition def = m_wield_item_next
+			.getDefinition(m_client->getItemDefManager());
+		m_wield_animation_base = def.wield_animation_base;
+		m_wield_animation_dig = def.wield_animation_dig;
+		m_wield_animation_place = def.wield_animation_place;
+		m_wield_animation_activate = def.wield_animation_activate;
 	}
 
 	if (m_view_bobbing_state != 0)
@@ -222,23 +225,21 @@ void Camera::step(f32 dtime)
 		}
 	}
 
-	if (m_digging_button != -1) {
-		float m_digging_anim_was = m_digging_anim;
-		m_digging_anim += dtime;
-		const WieldAnimation &wield_anim = WieldAnimation::getNamed(m_wield_animation);
-		if (m_digging_anim >= wield_anim.getDuration())
-		{
-			m_digging_anim = 0;
-			m_digging_button = -1;
-		}
-		float lim = 0.05f;
-		if(m_digging_anim_was < lim && m_digging_anim >= lim)
-		{
-			if (m_digging_button == 0) {
-				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_LEFT));
-			} else if(m_digging_button == 1) {
-				m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_RIGHT));
-			}
+	float m_digging_anim_was = m_digging_anim;
+	m_digging_anim += dtime;
+	const WieldAnimation &wield_anim = getCurrentWieldAnimation();
+	if (m_digging_anim >= wield_anim.getDuration())
+	{
+		m_digging_anim = 0;
+		m_digging_button = -1;
+	}
+	float lim = 0.05f;
+	if(m_digging_anim_was < lim && m_digging_anim >= lim)
+	{
+		if (m_digging_button == 0) {
+			m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_LEFT));
+		} else if(m_digging_button == 1) {
+			m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::CAMERA_PUNCH_RIGHT));
 		}
 	}
 }
@@ -559,7 +560,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (m_arm_inertia)
 		addArmInertia(player->getYaw());
 
-	const WieldAnimation &wield_anim = WieldAnimation::getNamed(m_wield_animation);
+	const WieldAnimation &wield_anim = getCurrentWieldAnimation();
 
 	// Position the wielded item
 	//v3f wield_position = v3f(45, -35, 65);
@@ -568,6 +569,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	v3f wield_rotation = v3f(-100, 120, -100);
 	core::quaternion wield_rotation_q =	core::quaternion(wield_rotation * core::DEGTORAD);
 	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;
+
 #if 0
 	if(m_digging_anim < 0.05 || m_digging_anim > 0.5)
 	{
@@ -586,22 +588,22 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 		//wield_rotation.Z += frac * 15.0 * pow(ratiothing2, 1.0f);
 	}
 #endif
-	if (m_digging_button != -1)
-	{
-		f32 digfrac = m_digging_anim;
-		v3f anim_position = wield_anim.getTranslationAt(digfrac);
-		wield_position.X += anim_position.X;
-		wield_position.Y += anim_position.Y;
-		wield_position.Z += anim_position.Z;
 
-		// Euler angles are PURE EVIL, so why not use quaternions?
-		core::quaternion quat_rot = wield_anim.getRotationAt(digfrac);
-		// apply rotation to starting rotation
-		wield_rotation_q *= quat_rot;
-		// convert back to euler angles
-		wield_rotation_q.toEuler(wield_rotation);
-		wield_rotation *= core::RADTODEG;
-	} else {
+	f32 digfrac = m_digging_anim;
+	v3f anim_position = wield_anim.getTranslationAt(digfrac);
+	wield_position.X += anim_position.X;
+	wield_position.Y += anim_position.Y;
+	wield_position.Z += anim_position.Z;
+
+	// Euler angles are PURE EVIL, so why not use quaternions?
+	core::quaternion quat_rot = wield_anim.getRotationAt(digfrac);
+	// apply rotation to starting rotation
+	wield_rotation_q *= quat_rot;
+	// convert back to euler angles
+	wield_rotation_q.toEuler(wield_rotation);
+	wield_rotation *= core::RADTODEG;
+
+	if (m_digging_button == -1) {
 		f32 bobfrac = my_modf(m_view_bobbing_anim);
 		// std::cout << "Third block, frac = " << bobfrac << std::endl;
 		wield_position.X -= sin(bobfrac*M_PI*2.0) * 3.0;
@@ -782,4 +784,24 @@ void Camera::removeNametag(Nametag *nametag)
 {
 	m_nametags.remove(nametag);
 	delete nametag;
+}
+
+const WieldAnimation &Camera::getCurrentWieldAnimation()
+{
+	std::string anim_name;
+	switch (m_digging_button) {
+	case -1:
+		anim_name = m_wield_animation_base;
+		break;
+	case 0:
+		anim_name = m_wield_animation_dig;
+		break;
+	case 1:
+		anim_name = m_wield_animation_place;
+		break;
+	case 2:
+		anim_name = m_wield_animation_activate;
+		break;
+	}
+	return WieldAnimation::getNamed(anim_name);
 }

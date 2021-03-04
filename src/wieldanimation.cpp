@@ -70,7 +70,7 @@ std::unordered_map<std::string, WieldAnimation> WieldAnimation::repository;
 
 void WieldAnimation::fillRepository()
 {
-	// default: "punch"
+	// punch / dig
 	WieldAnimation &punch = repository["punch"];
 	punch.m_translationspline.addNode(v3f(0, 0, 0))
 			.addNode(v3f(-70, 50, 0))
@@ -84,6 +84,16 @@ void WieldAnimation::fillRepository()
 	punch.m_rotationspline.addIndex(1.0, 0, 2);
 	punch.setDuration(0.3f);
 
+	// base
+	WieldAnimation &base = repository["base"];
+	base.m_translationspline.addNode(v3f(0, 0, 0));
+	base.m_translationspline.addIndex(0.0, 0, 0);
+
+	base.m_rotationspline.addNode(quatFromAngles(0.0f, 0.0f, 0.0f));
+	base.m_rotationspline.addIndex(0.0, 0, 0);
+	base.setDuration(0.0f);
+
+	/*
 	WieldAnimation &dig = repository["dig"];
 	dig.m_translationspline.addNode(v3f(0, 0, 0))
 			.addNode(v3f(-70, -50, 0))
@@ -99,12 +109,14 @@ void WieldAnimation::fillRepository()
 			.addNode(quatFromAngles(0.0f, 0.0f, 0.0f));
 	dig.m_rotationspline.addIndex(1.0, 0, 2).addIndex(1.0, 2, 3);
 	dig.setDuration(0.3f);
-
+	*/
 	// eat (without chewing)
 	WieldAnimation &eat = repository["eat"];
 	eat.m_translationspline.addNode(v3f(0, 0, 0))
 			.addNode(v3f(-35, 20, 0))
 			.addNode(v3f(-55, 10, 0))
+			.addNode(v3f(-55, 10, 0))
+			.addNode(v3f(-55, 15, 0))
 			.addNode(v3f(-55, 10, 0))
 			.addNode(v3f(-55, 15, 0))
 			.addNode(v3f(-55, 10, 0))
@@ -118,13 +130,15 @@ void WieldAnimation::fillRepository()
 			.addIndex(0.5, 4, 1)
 			.addIndex(0.5, 5, 1)
 			.addIndex(0.5, 6, 1)
-			.addIndex(1.0, 7, 3);
+			.addIndex(0.5, 7, 1)
+			.addIndex(0.5, 8, 1)
+			.addIndex(1.0, 9, 3);
 
 	eat.m_rotationspline.addNode(quatFromAngles(0.0f, 0.0f, 0.0f))
-			.addNode(quatFromAngles(-90.0f, 20.0f, -80.0f))
+			.addNode(quatFromAngles(-85.0f, -30.0f, -80.0f))
 			.addNode(quatFromAngles(0.0f, 0.0f, 0.0f));
 	eat.m_rotationspline.addIndex(1.0, 0, 1).addIndex(2.0, 1, 0).addIndex(1.0, 1, 1);
-	eat.setDuration(1.0f);
+	eat.setDuration(1.3f);
 
 	// "poke"
 	WieldAnimation &poke = repository["poke"];

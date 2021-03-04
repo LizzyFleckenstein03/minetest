@@ -65,7 +65,10 @@ struct ItemDefinition
 	*/
 	std::string inventory_image; // Optional for nodes, mandatory for tools/craftitems
 	std::string inventory_overlay; // Overlay of inventory_image.
-	std::string wield_animation;   // Named wield animation
+	std::string wield_animation_base;   // Named wield animations
+	std::string wield_animation_dig;
+	std::string wield_animation_place;
+	std::string wield_animation_activate;
 	std::string wield_image; // If empty, inventory_image or mesh (only nodes) is used
 	std::string wield_overlay; // Overlay of wield_image.
 	std::string palette_image; // If specified, the item will be colorized based on this

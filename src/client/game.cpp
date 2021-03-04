@@ -3106,6 +3106,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 			client->getScript()->on_item_use(selected_item, pointed);
 	} else if (wasKeyPressed(KeyType::PLACE)) {
 		handlePointingAtNothing(selected_item);
+		camera->setDigging(2);
 	}
 
 	runData.pointed_old = pointed;
