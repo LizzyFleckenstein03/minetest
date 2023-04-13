@@ -222,6 +222,9 @@ WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool l
 	m_meshnode->setVisible(false);
 	dummymesh->drop(); // m_meshnode grabbed it
 
+	scene::IShadowVolumeSceneNode *shadVol = m_meshnode->addShadowVolumeSceneNode();
+	if (shadVol) shadVol->setOptimization(scene::ESV_NONE);
+
 	m_shadow = RenderingEngine::get_shadow_renderer();
 
 	if (m_shadow) {
@@ -392,8 +395,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		// overlay is white, if present
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
 		// initialize the color
-		if (!m_lighting)
-			setColor(video::SColor(0xFFFFFFFF));
+		setColor(video::SColor(0xFFFFFFFF));
 		return;
 	}
 
@@ -467,8 +469,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		}
 
 		// initialize the color
-		if (!m_lighting)
-			setColor(video::SColor(0xFFFFFFFF));
+		setColor(video::SColor(0xFFFFFFFF));
 		return;
 	} else {
 		if (!def.inventory_image.empty()) {
@@ -483,8 +484,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
 
 		// initialize the color
-		if (!m_lighting)
-			setColor(video::SColor(0xFFFFFFFF));
+		setColor(video::SColor(0xFFFFFFFF));
 		return;
 	}
 
@@ -494,7 +494,9 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client, bool che
 
 void WieldMeshSceneNode::setColor(video::SColor c)
 {
-	assert(!m_lighting);
+	if (m_lighting)
+		return;
+
 	scene::IMesh *mesh = m_meshnode->getMesh();
 	if (!mesh)
 		return;
@@ -651,7 +653,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
 			material.setFlag(video::EMF_BACK_FACE_CULLING, cull_backface);
-			material.setFlag(video::EMF_LIGHTING, false);
+			material.setFlag(video::EMF_LIGHTING, true);
 		}
 
 		rotateMeshXZby(mesh, -45);
@@ -696,7 +698,7 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 		material.setFlag(video::EMF_BILINEAR_FILTER, false);
 		material.setFlag(video::EMF_TRILINEAR_FILTER, false);
 		material.setFlag(video::EMF_BACK_FACE_CULLING, true);
-		material.setFlag(video::EMF_LIGHTING, false);
+		material.setFlag(video::EMF_LIGHTING, true);
 		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		material.MaterialTypeParam = 0.5f;
 	}

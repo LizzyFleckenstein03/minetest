@@ -126,7 +126,7 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	params.WindowSize = core::dimension2d<u32>(screen_w, screen_h);
 	params.AntiAlias = fsaa;
 	params.Fullscreen = fullscreen;
-	params.Stencilbuffer = false;
+	params.Stencilbuffer = true;
 	params.Vsync = vsync;
 	params.EventReceiver = receiver;
 	params.HighPrecisionFPU = true;

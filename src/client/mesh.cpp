@@ -406,7 +406,7 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 	for (u16 j = 0; j < 6; j++)
 	{
 		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+		buf->getMaterial().setFlag(video::EMF_LIGHTING, true);
 		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 		dst_mesh->addMeshBuffer(buf);
 		buf->drop();

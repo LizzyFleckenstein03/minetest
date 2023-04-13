@@ -251,7 +251,7 @@ void TestCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	u16 indices[] = {0,1,2,2,3,0};
 	buf->append(vertices, 4, indices, 6);
 	// Set material
-	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+	buf->getMaterial().setFlag(video::EMF_LIGHTING, true);
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
 	buf->getMaterial().setTexture(0, tsrc->getTextureForMesh("rat.png"));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
@@ -643,14 +643,14 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	};
 
 	auto setSceneNodeMaterial = [this] (scene::ISceneNode *node) {
-		node->setMaterialFlag(video::EMF_LIGHTING, false);
+		node->setMaterialFlag(video::EMF_LIGHTING, true);
 		node->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 		node->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+		node->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		node->setMaterialType(m_material_type);
 
 		if (m_enable_shaders) {
 			node->setMaterialFlag(video::EMF_GOURAUD_SHADING, false);
-			node->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		}
 	};
 
@@ -695,15 +695,15 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			u16 indices[] = {0,1,2,2,3,0};
 			buf->append(vertices, 4, indices, 6);
 			// Set material
-			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+			buf->getMaterial().setFlag(video::EMF_LIGHTING, true);
 			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+			buf->getMaterial().setFlag(video::EMF_NORMALIZE_NORMALS, true);
 			buf->getMaterial().MaterialType = m_material_type;
 
 			if (m_enable_shaders) {
 				buf->getMaterial().EmissiveColor = c;
 				buf->getMaterial().setFlag(video::EMF_GOURAUD_SHADING, false);
-				buf->getMaterial().setFlag(video::EMF_NORMALIZE_NORMALS, true);
 			}
 
 			// Add to mesh
@@ -726,7 +726,8 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			u16 indices[] = {0,1,2,2,3,0};
 			buf->append(vertices, 4, indices, 6);
 			// Set material
-			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+			buf->getMaterial().setFlag(video::EMF_LIGHTING, true);
+			buf->getMaterial().setFlag(video::EMF_NORMALIZE_NORMALS, true);
 			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 			buf->getMaterial().MaterialType = m_material_type;
@@ -734,7 +735,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			if (m_enable_shaders) {
 				buf->getMaterial().EmissiveColor = c;
 				buf->getMaterial().setFlag(video::EMF_GOURAUD_SHADING, false);
-				buf->getMaterial().setFlag(video::EMF_NORMALIZE_NORMALS, true);
 			}
 
 			// Add to mesh
@@ -744,6 +744,10 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 		m_meshnode = m_smgr->addMeshSceneNode(mesh, m_matrixnode);
 		m_meshnode->grab();
 		mesh->drop();
+
+		//m_meshnode->setAutomaticCulling(scene::EAC_OFF);
+		scene::IShadowVolumeSceneNode *shadVol = m_meshnode->addShadowVolumeSceneNode();
+		if (shadVol) shadVol->setOptimization(scene::ESV_NONE);
 	} else if (m_prop.visual == "cube") {
 		grabMatrixNode();
 		scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
@@ -756,6 +760,10 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 			m_prop.backface_culling);
 
 		setSceneNodeMaterial(m_meshnode);
+
+		//m_meshnode->setAutomaticCulling(scene::EAC_OFF);
+		scene::IShadowVolumeSceneNode *shadVol = m_meshnode->addShadowVolumeSceneNode();
+		if (shadVol) shadVol->setOptimization(scene::ESV_NONE);
 	} else if (m_prop.visual == "mesh") {
 		grabMatrixNode();
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh, true);
@@ -782,6 +790,10 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 
 			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING,
 				m_prop.backface_culling);
+
+			//m_animated_meshnode->setAutomaticCulling(scene::EAC_OFF);
+			scene::IShadowVolumeSceneNode *shadVol = m_animated_meshnode->addShadowVolumeSceneNode();
+			if (shadVol) shadVol->setOptimization(scene::ESV_NONE);
 		} else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
 	} else if (m_prop.visual == "wielditem" || m_prop.visual == "item") {
@@ -1374,6 +1386,7 @@ void GenericCAO::updateTextures(std::string mod)
 				material.setFlag(video::EMF_LIGHTING, true);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 				material.setFlag(video::EMF_BACK_FACE_CULLING, m_prop.backface_culling);
+				material.setFlag(video::EMF_NORMALIZE_NORMALS, true);
 
 				// don't filter low-res textures, makes them look blurry
 				// player models have a res of 64
@@ -1417,8 +1430,9 @@ void GenericCAO::updateTextures(std::string mod)
 				video::SMaterial& material = m_meshnode->getMaterial(i);
 				material.MaterialType = m_material_type;
 				material.MaterialTypeParam = 0.5f;
-				material.setFlag(video::EMF_LIGHTING, false);
+				material.setFlag(video::EMF_LIGHTING, true);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
+				material.setFlag(video::EMF_NORMALIZE_NORMALS, true);
 				material.setTexture(0,
 						tsrc->getTextureForMesh(texturestring));
 				material.getTextureMatrix(0).makeIdentity();
